@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <title>Ogrenci Form</title>
+    <h:outputStylesheet library="css" name="bootstrap.css"/>
+    <h:outputScript library="js" name="jquery-3.7.0.min.js"/>
+    <h:outputScript library="js" name="bootstrap.js"/>
+
+    <style>
+        /* Boşluk ve hizalama  */
+        .photo-container {
+            margin: 20px; 
+            float: right; 
+        }
+        
+  
+        .new-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid transparent;
+            border-top: 4px solid #e74c3c;
+            border-right: 4px solid #2ecc71;
+            border-bottom: 4px solid #3498db;
+            border-left: 4px solid #f39c12;
+            border-radius: 50%;
+            animation: spinNew 2s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            z-index: 9999;
+        }
+
+        @keyframes spinNew {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        body {
+            background-color: #FFA500; 
+            margin: 10px; 
+            padding: 10px; 
+        }
+        .container {
+            background-color: #fff; 
+            padding: 20px; 
+            border-radius: 5px; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); 
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="container">
+        <!-- Form Ekrani -->
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-md-4">
+                <h:form id="ogrenciBilgi-form">
+                    <h:inputHidden value="#{ogrenciBilgiController.ogrenciBilgi.id}"/>
+                    <div class="form-group">
+                        <label for="inputOgrAd">Adı</label>
+                        <h:inputText styleClass="form-control" value="#{ogrenciBilgiController.ogrenciBilgi.ogrAd}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputOgrAd">Soyadı</label>
+                        <h:inputText styleClass="form-control" value="#{ogrenciBilgiController.ogrenciBilgi.ogrSoyad}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputOgrAd">Cinsiyeti</label>
+                        <h:selectOneMenu styleClass="form-control" value="#{ogrenciBilgiController.ogrenciBilgi.cinsiyet}">
+                            <f:selectItem itemLabel="Seçiniz" itemValue=""/>
+                            <f:selectItem itemLabel="Erkek" itemValue="Erkek"/>
+                            <f:selectItem itemLabel="Kız" itemValue="Kız"/>
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group">
+                            <!-- updateMode'a göre farklı butonlar göster -->
+                            <h:commandButton rendered="#{!ogrenciBilgiController.updateMode}" styleClass="btn btn-primary" value="Create"
+                                             action="#{ogrenciBilgiController.create}" onclick="animateButtonClick()">
+                                <f:ajax execute="ogrenciBilgi-form ogrenciBilgi-table" render="ogrenciBilgi-form ogrenciBilgi-table"/>
+                            </h:commandButton>
+                            <h:commandButton rendered="#{ogrenciBilgiController.updateMode}" styleClass="btn btn-info" value="Update"
+                                             action="#{ogrenciBilgiController.update}" onclick="animateButtonClick()">
+                                <f:ajax execute="ogrenciBilgi-form ogrenciBilgi-table" render="ogrenciBilgi-form ogrenciBilgi-table"/>
+                            </h:commandButton>
+                            <h:commandButton styleClass="btn btn-secondary" value="Clear Form" action="#{ogrenciBilgiController.clearForm}">
+                                <f:ajax execute="ogrenciBilgi-form" render="ogrenciBilgi-form ogrenciBilgi-table"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Resim  -->
+            <div class="col-md-8">
+                <div class="photo-container">
+                    <img src="#{request.contextPath}/resources/images/btc.jpg" alt="btc" style="width: 300px; height: 200px;" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Ogrenci Listesi -->
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-md-12">
+                <h:form id="ogrenciBilgi-table">
+                    <h:dataTable styleClass="table table-striped" value="#{ogrenciBilgiController.ogrenciBilgiList}" var="ogr">
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            #{ogr.id}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">OGRENCI ADI</f:facet>
+                            <h:outputText action="#{ogrenciBilgiController.updateForm(ogr)}" styleClass="text-decoration-none text-dark" value="#{ogr.ogrAd}">
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">OGRENCI SOYADI</f:facet>
+                            <h:outputText action="#{ogrenciBilgiController.updateForm(ogr)}" styleClass="text-decoration-none text-dark" value="#{ogr.ogrSoyad}">
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">CİNSİYET</f:facet>
+                            <h:outputText action="#{ogrenciBilgiController.updateForm(ogr)}" styleClass="text-decoration-none text-dark" value="#{ogr.cinsiyet}">
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">DÜZENLE</f:facet>
+                            <h:commandButton styleClass="btn btn-sm btn-warning" action="#{ogrenciBilgiController.updateForm(ogr)}" value="Düzenle">
+                            </h:commandButton>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">DELETE</f:facet>
+                            <h:commandButton onclick="$('#deleteModal').modal('show')" styleClass="btn btn-sm btn-danger" action="#{ogrenciBilgiController.deleteConfirm(ogr)}" value="Delete">
+                                <f:ajax execute="@this" render="deleteModalContent"/>
+                            </h:commandButton>
+                        </h:column>
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Veri Silme Ekrani</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bilgileri silmek istediğinizden emin misiniz?</p>
+        
+                        <div id="alertMessage" class="alert alert-success" role="alert" style="display: none;">
+                            Veri başarıyla silindi!
+                        </div>
+                        <h:form>
+                            <h:panelGroup layout="block" id="deleteModalContent" />
+                            <div class="modal-footer">
+                                <h:commandButton onclick="deleteData();" action="#{ogrenciBilgiController.delete}" styleClass="btn btn-danger" value="Onayla">
+                                    <f:ajax execute="@this" render="alertMessage ogrenciBilgi-table ogrenciBilgi-form" />
+                                </h:commandButton>
+                                <h:commandButton onclick="$('#deleteModal').modal('hide')" styleClass="btn btn-dark" value="İptal">
+                                    <f:ajax execute="@this" render="ogrenciBilgi-table ogrenciBilgi-form" />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function showSuccessAlert() {
+        $('#alertMessage').show();
+        setTimeout(function () {
+            $('#alertMessage').hide();
+            $('#deleteModal').modal('hide');
+        }, 1000); // 1sn sonra uyariyi gizle
+    }
+
+    function deleteData() {
+        showSuccessAlert();
+    }
+    
+        function animateButtonClick() {
+            $('#createButton').addClass('animated-button');
+            $('#loadingSpinner').show(); //spin çubuğunu göster
+            setTimeout(function() {
+                $('#createButton').removeClass('animated-button');
+                $('#loadingSpinner').hide(); //spin çubuğunu gizle
+            }, 1000);
+        }
+    </script>
+
+    <div id="loadingSpinner" class="new-spinner" style="display: none;"></div>
+</h:body>
+</html>
